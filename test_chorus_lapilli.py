@@ -178,7 +178,7 @@ class TestChorusLapilli(unittest.TestCase):
 
     def no_adj_move(self):
         tiles = self.driver.find_elements(By.XPATH, self.BOARD_TILE_XPATH)
-        for i in range(6):
+        for i in range(6): 
             tiles[i].click()
         tiles[0].click()
         before_from = tiles[0].text
@@ -186,6 +186,21 @@ class TestChorusLapilli(unittest.TestCase):
         tiles[8].click()
         after_from = tiles[0].text
         after_to = tiles[8].text
+        self.assertEqual(before_from, after_from)
+        self.assertEqual(before_to, after_to)
+
+    def test_cannot_move_opponent_piece(self):
+        tiles = self.driver.find_elements(By.XPATH, self.BOARD_TILE_XPATH)
+        for i in range(6):
+            tiles[i].click()
+        before_from = tiles[1].text
+        tiles[1].click()
+    
+        before_to = tiles[6].text
+        tiles[6].click()
+
+        after_from = tiles[1].text
+        after_to = tiles[6].text
         self.assertEqual(before_from, after_from)
         self.assertEqual(before_to, after_to)
 
