@@ -155,6 +155,40 @@ class TestChorusLapilli(unittest.TestCase):
         tiles[0].click()
         self.assertTileIs(tiles[0], self.SYMBOL_X)
 
+    def test_no_moves_after_win(self):
+        tiles = self.driver.find_elements(By.XPATH, self.BOARD_TILE_XPATH)
+        tiles[0].click()
+        tiles[3].click()
+        tiles[1].click()
+        tiles[4].click()
+        tiles[2].click()  
+        before = tiles[5].text
+        tiles[5].click()
+        after = tiles[5].text
+        self.assertEqual(before, after)
+
+    def test_no_more_than_6_pieces(self):
+        tiles = self.driver.find_elements(By.XPATH, self.BOARD_TILE_XPATH)
+        for i in range(6):
+            tiles[i].click()
+        before = tiles[6].text
+        tiles[6].click()
+        after = tiles[6].text
+        self.assertEqual(before, after)
+
+    def no_adj_move(self):
+        tiles = self.driver.find_elements(By.XPATH, self.BOARD_TILE_XPATH)
+        for i in range(6):
+            tiles[i].click()
+        tiles[0].click()
+        before_from = tiles[0].text
+        before_to = tiles[8].text
+        tiles[8].click()
+        after_from = tiles[0].text
+        after_to = tiles[8].text
+        self.assertEqual(before_from, after_from)
+        self.assertEqual(before_to, after_to)
+
 
 # ================= [DO NOT MAKE ANY CHANGES BELOW THIS LINE] =================
 
