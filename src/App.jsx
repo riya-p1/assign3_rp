@@ -25,7 +25,6 @@ function Board({ xIsNext, squares, selectedSquare, onSelect, onPlay }) {
     return
   }
 
-  //movement phase
   if (selectedSquare === null) {
     if (squares[index] === currentPlayer) {
       onSelect(index)
