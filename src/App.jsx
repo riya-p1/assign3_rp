@@ -3,35 +3,61 @@ import * as React from 'react'
 import * as ReactBootstrap from 'react-bootstrap'
 import { useState } from 'react'
 
-function Square({ value, onSquareClick }) {
+function Square({ value, onSquareClick, selected }) {
   return (
-    <button type="button" className="square" onClick={onSquareClick}>
+    <button type="button" className={selected ? "square selected" : "square"} onClick={onSquareClick}>
       {value}
     </button>
   )
 }
 
-function Board({ xIsNext, squares, onPlay }) {
+function Board({ xIsNext, squares, selectedSquare, onSelect, onPlay }) {
   const winner = calculateWinner(squares)
   const currentPlayer = xIsNext ? 'X' : 'O'
 
   function handleClick(index) {
-    if (winner || squares[index]) {
-      return
-    }
+  if (winner) return
+
+  if (isPlacementPhase(squares)) {
+    if (squares[index]) return
 
     const updatedSquares = [...squares]
     updatedSquares[index] = currentPlayer
     onPlay(updatedSquares)
+    return
+  }
+
+  //movement phase
+  if (selectedSquare === null) {
+    if (squares[index] === currentPlayer) {
+      onSelect(index)
+    }
+    return
+  }
+
+  const from = selectedSquare
+  const to = index
+  onSelect(null)
+
+  if (squares[to] !== null) return
+  if (!isAdjacent(from, to)) return
+  if (violatesCenterRule(squares, currentPlayer, from, to)) return
+
+  const updatedSquares = [...squares]
+  updatedSquares[from] = null
+  updatedSquares[to] = currentPlayer
+
+  onPlay(updatedSquares)
   }
 
   const status = winner ? `Winner: ${winner}`: `Next player: ${currentPlayer}`
 
   const renderSquare = (index) => (
-    <Square
-      value={squares[index]}
-      onSquareClick={() => handleClick(index)}
-    />
+  <Square
+    value={squares[index]}
+    selected={selectedSquare === index}
+    onSquareClick={() => handleClick(index)}
+  />
   )
 
   return (
@@ -62,6 +88,7 @@ function Board({ xIsNext, squares, onPlay }) {
 export default function App() {
   const [history, setHistory] = useState([Array(9).fill(null)])
   const [currentMove, setCurrentMove] = useState(0)
+  const [selectedSquare, setSelectedSquare] = useState(null)
 
   const currentSquares = history[currentMove]
   const xIsNext = currentMove % 2 === 0
@@ -93,9 +120,8 @@ export default function App() {
   return (
     <main className="game">
       <section className="game-board">
-        <Board xIsNext={xIsNext} squares={currentSquares} onPlay={handlePlay} />
+        <Board xIsNext={xIsNext} squares={currentSquares} selectedSquare={selectedSquare} onSelect={setSelectedSquare} onPlay={handlePlay} />
       </section>
-
       <aside className="game-info">
         <ol>{moves}</ol>
       </aside>
@@ -126,4 +152,32 @@ function calculateWinner(squares) {
   }
 
   return null
+}
+
+function isPlacementPhase(squares) {
+  return squares.filter(Boolean).length < 6
+}
+
+function isAdjacent(from, to) {
+  const r1 = Math.floor(from / 3)
+  const c1 = from % 3
+  const r2 = Math.floor(to / 3)
+  const c2 = to % 3
+
+  return Math.abs(r1 - r2) <= 1 && Math.abs(c1 - c2) <= 1 && from !== to
+}
+
+function violatesCenterRule(squares, player, from, to) {
+  const center = 4
+
+  if (squares[center] !== player) return false
+
+  const test = [...squares]
+  test[from] = null
+  test[to] = player
+
+  const wins = calculateWinner(test) === player
+  const movedCenter = from === center
+
+  return !wins && !movedCenter
 }

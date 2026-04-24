@@ -1,0 +1,60 @@
+Lab Notebook for Tic Tac Toe Game:
+
+* Configuring softwares and Github
+- Installed WSL Ubuntu and then connected it to my VSCode via extension so that I could use the IDE to code
+- used commands in terminal to download Node.js and Python with WSL
+- Forked and cloned the github for assign3 and cd into the clone to work on the assignement after using the helper initialization
+
+* Opened starter project and examined the App.jsx, which originally contained a Hello World example
+- Tested it by running ./helper dev to see how the webpage would look like
+
+* Started following the React tic tac toe tutorial
+- First created a Square component that renders a button
+- verified that clicking the button works
+
+* Initially tried storing state inside each Square
+- I realized from the tut that state needs to be lifted up
+- moved the state to the parent component instead
+
+* Created a Board component
+- meant to render 9 Square components
+- Passed props from Board to Square so each square could display its value (X/O)
+
+* Added a Squares state array using the useState(Array(9).fill(null))
+- used to store board state
+- initially forgot to import useState which cause an error
+
+* Implemented handleClick inside Board
+- used to update the squares array
+- At first it only placed the X
+- Changed to alternate between X and O using xIsNext
+
+* Added cond to prevent overwriting
+- stops from overwriting squares already having a value
+- Fixed the issue where clicking same square changed it 
+
+* Implemented the calculateWinner function
+- used all 8 possible winning combinations
+- I verified that it worked and detected wins correct
+
+* Added the logic to stop any more moves once the winner is found
+
+* Added status display that shows either the next player or winner
+
+* Added history tracker
+- used a history array to store prev board states 
+- currentMove var to track the current step
+
+* Implemented handlePlay
+- used to update history and currentMove
+- initially had issues with slicing the array but fixed with history.slice(0, currentMove + 1)
+
+* Added jumpTo function
+- allows moving back to prev steps
+
+* Rendered list of buttons
+- originally forgot to add a key to each list item, which caused warning before fix
+
+* Tested the app by clicking Squares
+- verified turn switch, detecting winner, history, etc
+- Final result matches the tutorial 
